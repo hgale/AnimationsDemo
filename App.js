@@ -1,74 +1,71 @@
 /**
  * Demo of Animation Timing in React Native
  */
+ import React, { Component } from 'react';
+ import {
+   StyleSheet,
+   ScrollView,
+   Animated,
+ } from 'react-native';
 
-import React, { Component } from 'react';
-import { View, Animated, Button, StyleSheet } from 'react-native';
-
-/* Can Animate any of the following:
-*  Animated.Image
-*  Animated.ScrollView
-*  Animated.Text
-*  Animated.View
-*/
-
+ const arr = []
+ for (let i = 0; i < 500; i++) {
+   arr.push(i)
+ }
 export default class App extends Component<{}> {
 
-    animatedMargin = new Animated.Value(0);
-    animatedWidth = new Animated.Value(50);
-    animatedHeight = new Animated.Value(50);
+  constructor() {
+    super();
+    this.animatedValue = [];
+    arr.forEach((value) => {
+      this.animatedValue[value] = new Animated.Value(0);
+    });
+  }
 
-    animateMargin = () => {
-      Animated.timing(
-        this.animatedMargin,
+  componentDidMount() {
+    this.animate();
+  }
+
+  animate() {
+    const animations = arr.map((item) => {
+      return Animated.timing(
+        this.animatedValue[item],
         {
-          toValue: this.animatedMargin._value + 200,
-          duration: 1000,
+          toValue: 1,
+          duration: 4000,
         },
-      ).start();
-    }
-
-    animateSize = () => {
-      Animated.timing(
-        this.animatedWidth,
-        {
-          toValue: this.animatedWidth._value + 50,
-          duration: 500,
-        },
-      ).start();
-      Animated.timing(
-        this.animatedHeight,
-        {
-          toValue: this.animatedHeight._value + 50,
-          duration: 500,
-        },
-      ).start();
-    }
-
-    render() {
-      return (
-        <View style={styles.container}>
-          <Button title="Animate Margin" onPress={this.animateMargin} />
-          <Button title="Animate Size" onPress={this.animateSize} />
-
-          <Animated.View
-            style={[
-              styles.block,
-              { marginTop: this.animatedMargin },
-              { width: this.animatedWidth, height: this.animatedHeight },
-            ]}
-          />
-        </View>
       );
-    }
+    });
+    Animated.stagger(10, animations).start();
+  }
+
+  render() {
+    const animations = arr.map((a, i) => {
+      return (
+        <Animated.View
+          key={i}
+          style={[styles.box, { opacity: this.animatedValue[a] }]}
+        />
+      );
+    });
+    return (
+      <ScrollView contentContainerStyle={styles.container}>
+        {animations}
+      </ScrollView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
-    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
-  block: {
-    backgroundColor: '#FF9900',
+  box: {
+    height: 20,
+    width: 20,
+    backgroundColor: 'red',
+    marginLeft: 3,
+    marginTop: 3,
   },
 })
