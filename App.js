@@ -1,74 +1,83 @@
 /**
- * Demo of Animation Timing in React Native
+ * Demo of Animation Sequence in React Native
  */
 
-import React, { Component } from 'react';
-import { View, Animated, Button, StyleSheet } from 'react-native';
+ import React, { Component } from 'react';
+ import { Animated, View, Button, StyleSheet } from 'react-native';
 
-/* Can Animate any of the following:
-*  Animated.Image
-*  Animated.ScrollView
-*  Animated.Text
-*  Animated.View
-*/
+ /* Can Animate any of the following:
+ *  Animated.Image
+ *  Animated.ScrollView
+ *  Animated.Text
+ *  Animated.View
+ */
+
 
 export default class App extends Component<{}> {
 
-    animatedMargin = new Animated.Value(0);
-    animatedWidth = new Animated.Value(50);
-    animatedHeight = new Animated.Value(50);
-
-    animateMargin = () => {
-      Animated.timing(
-        this.animatedMargin,
-        {
-          toValue: this.animatedMargin._value + 200,
-          duration: 1000,
-        },
-      ).start();
+  state = {
+      loaded: false,
     }
 
-    animateSize = () => {
-      Animated.timing(
-        this.animatedWidth,
-        {
-          toValue: this.animatedWidth._value + 50,
-          duration: 500,
-        },
-      ).start();
-      Animated.timing(
-        this.animatedHeight,
-        {
-          toValue: this.animatedHeight._value + 50,
-          duration: 500,
-        },
-      ).start();
+    animatedMarginLeft = new Animated.Value(0);
+    animatedMarginTop = new Animated.Value(0);
+
+    animate = () => {
+      Animated.sequence([
+        Animated.timing(
+          this.animatedMarginTop,
+          {
+            toValue: 516,
+            duration: 1000,
+          },
+        ),
+        Animated.timing(
+          this.animatedMarginLeft,
+          {
+            toValue: 325,
+            duration: 1000,
+          },
+        ),
+        Animated.timing(
+          this.animatedMarginTop,
+          {
+            toValue: 0,
+            duration: 1000,
+          },
+        ),
+        Animated.timing(
+          this.animatedMarginLeft,
+          {
+            toValue: 0,
+            duration: 1000,
+          },
+        ),
+      ]).start(() => this.animate());
     }
 
     render() {
       return (
         <View style={styles.container}>
-          <Button title="Animate Margin" onPress={this.animateMargin} />
-          <Button title="Animate Size" onPress={this.animateSize} />
-
+          <Button onPress={this.animate} title="Animate Sequence" />
           <Animated.View
             style={[
               styles.block,
-              { marginTop: this.animatedMargin },
-              { width: this.animatedWidth, height: this.animatedHeight },
+              { marginTop: this.animatedMarginTop, marginLeft: this.animatedMarginLeft },
             ]}
           />
         </View>
       );
     }
-}
+  }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     marginTop: 50,
-    alignItems: 'center',
   },
   block: {
-    backgroundColor: '#FF9900',
+    width: 50,
+    height: 50,
+    backgroundColor: 'red',
   },
 })
